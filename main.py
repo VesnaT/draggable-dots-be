@@ -1,10 +1,13 @@
 from flask import Flask, request
 from flask_cors import CORS
+from flask_socketio import SocketIO, emit
 
 from db import save_data, read_data
 
 app = Flask(__name__)
-CORS(app)
+app.config['SECRET_KEY'] = 'secret!'
+CORS(app, resources={r"/*": {"origins": "*"}})
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 
 @app.route("/")
@@ -24,5 +27,24 @@ def set_data():
     return data
 
 
+@socketio.on("connect")
+def connected():
+    # print(request.sid)
+    print("user connected")
+    # emit("connect", {"data": f"id: {request.sid} is connected"})
+
+@socketio.on("foo")
+def handle_dot(data):
+    print("data from the front end")
+    print(data)
+    emit("foo", data.get_json(force=True), broadcast=True)
+
+
+@socketio.on("disconnect")
+def disconnected():
+    print("user disconnected")
+    emit("disconnect", f"user {request.sid} disconnected", broadcast=True)
+
+
 if __name__ == "__main__":
-    app.run()
+    socketio.run(app)
