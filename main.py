@@ -1,3 +1,5 @@
+import json
+
 from flask import Flask, request
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
@@ -37,6 +39,7 @@ def connected():
 @socketio.on("dot")
 def handle_dot(data: str):
     print("data from the front end")
+    save_data(json.loads(data))
     emit("dot", data, broadcast=True)
 
 
