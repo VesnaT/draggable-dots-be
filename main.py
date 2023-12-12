@@ -33,11 +33,11 @@ def connected():
     print("user connected")
     # emit("connect", {"data": f"id: {request.sid} is connected"})
 
+
 @socketio.on("foo")
-def handle_dot(data):
+def handle_dot(data: str):
     print("data from the front end")
-    print(data)
-    emit("foo", data.get_json(force=True), broadcast=True)
+    emit("foo", data, broadcast=True)
 
 
 @socketio.on("disconnect")
